@@ -31,7 +31,7 @@ const int B = 15;        //Resistencia a la luz (10 Lux) en KΩ
 const int RC = 10;       //Resistencia calibracion en KΩ
 const int LDRPIN = A0;   //Pin analogico de entrada del LDR
 
-int valorActual; // Variable donde se almacena el valor de luminosidad 
+int valorActual; // Variable donde se almacena el valor de luminosidad
 int valorLuminosidad; // Variable que nos servira para guardar el valor calculado de luminosidad que se tenga actualmente
 
 void setup() {
@@ -41,10 +41,10 @@ void setup() {
 }
 
 /*
- * Mandamos a llamar a los diferentes metodos para que cumplan con sus respectivas funcionalidades
- * humedadTemperatura: Para leer y mostrar los datos del sensor DHT11 en pantalla LCD
- * luminosidad: Calcula el valor en Luxes de luminosidad actual y los muestra en la pantalla LCD
- */
+   Mandamos a llamar a los diferentes metodos para que cumplan con sus respectivas funcionalidades
+   humedadTemperatura: Para leer y mostrar los datos del sensor DHT11 en pantalla LCD
+   luminosidad: Calcula el valor en Luxes de luminosidad actual y los muestra en la pantalla LCD
+*/
 void loop() {
   humedadTemperatura();
   luminosidad();
@@ -54,12 +54,12 @@ void humedadTemperatura() {
   float h = dht.readHumidity(); // Leemos la humedad relativa
   float t = dht.readTemperature(); // Leemos la temperatura que se encuentra en grados centigrados por defecto
 
-  /* 
-   *  Comprobamos si ha habido un error al leer los datos de temperatura y humedad
-   *  En caso contrario imprimimos los valores obtenidos desde el sensor DHT11 y mostramos
-   *  los datos enviandolos a la pantalla LCD con sus respectivas coordenadas donde se podran
-   *  visualizar
-   */
+  /*
+      Comprobamos si ha habido un error al leer los datos de temperatura y humedad
+      En caso contrario imprimimos los valores obtenidos desde el sensor DHT11 y mostramos
+      los datos enviandolos a la pantalla LCD con sus respectivas coordenadas donde se podran
+      visualizar
+  */
   if (isnan(t) || isnan(h)) {
     lcd.clear();
     lcd.write("Error Al Leer Datos Del Sensor DHT11");
@@ -77,14 +77,14 @@ void humedadTemperatura() {
   }
 }
 
-void luminosidad(){
+void luminosidad() {
   /*
-   *  Leemos el valor relativo de luminosidad actual y lo guardamos en una variable.
-   *  El valor leido (desde Vcc) aumenta de manera proporcional con respecto a la luz recibida
-   */
+      Leemos el valor relativo de luminosidad actual y lo guardamos en una variable.
+      El valor leido (desde Vcc) aumenta de manera proporcional con respecto a la luz recibida
+  */
   valorActual = analogRead(LDRPIN);
 
-  valorLuminosidad = ((long)valorActual * A * 10) / ((long)B * RC * (1024 - valorActual)); // Formula utilizada porque el LDR esta entre A0 y Vcc 
+  valorLuminosidad = ((long)valorActual * A * 10) / ((long)B * RC * (1024 - valorActual)); // Formula utilizada porque el LDR esta entre A0 y Vcc
   lcd.setCursor(0, 2); // Ubicamos la coredanada donde se mostrara el valor en la pantalla LCD
   lcd.write("I:");
   lcd.print(valorLuminosidad); // Imprimimos en pantalla el valor actualizado de luminosidad actual
