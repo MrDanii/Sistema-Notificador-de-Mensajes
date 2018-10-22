@@ -33,36 +33,36 @@ public class Menu extends JFrame{
        
         Font f=new Font("Century Gothic", Font.BOLD, 15);
         
-       LTITULO = new JLabel("Mensaje #1");
-       LTITULO.setFont(f);
-       LTITULO.setBounds(105,20,100,20);
-       add(LTITULO);
+        LTITULO = new JLabel("Mensaje #1");
+        LTITULO.setFont(f);
+        LTITULO.setBounds(105,20,100,20);
+        add(LTITULO);
        
-       TMENSAJE = new JTextArea();
-       TMENSAJE.setFont(f);
-       TMENSAJE.setBounds(47,50,200,150);
-       add(TMENSAJE);
-       
-       BANTERIOR = new JButton();
-       BANTERIOR.setIcon(new ImageIcon("src/display/izq.png"));
-       BANTERIOR.setBounds(15,110,22,30);
-       add(BANTERIOR);
-       
-       BSIGUIENTE = new JButton("Siguiente");
-       BSIGUIENTE.setIcon(new ImageIcon("src/display/der.png"));
-       BSIGUIENTE.setBounds(257,110,22,30);
-       add(BSIGUIENTE);
-       
-       BNUEVO = new JButton("Nuevo Mensaje");
-       BNUEVO.setFont(f);
-       BNUEVO.setBounds(45,250,200,20);
-       add(BNUEVO);
-       
-       BELIMINAR = new JButton("Eliminar Mensaje");
-       BELIMINAR.setFont(f);
-       BELIMINAR.setBounds(45,300,200,20);
-       add(BELIMINAR);
+        TMENSAJE = new JTextArea();
+        TMENSAJE.setFont(f);
+        TMENSAJE.setBounds(47,50,200,150);
+        add(TMENSAJE);
         
+        BANTERIOR = new JButton();
+        BANTERIOR.setIcon(new ImageIcon("src/imagenes/izq.png"));
+        BANTERIOR.setBounds(15,110,22,30);
+        add(BANTERIOR);
+        
+        BSIGUIENTE = new JButton("Siguiente");
+        BSIGUIENTE.setIcon(new ImageIcon("src/imagenes/der.png"));
+        BSIGUIENTE.setBounds(257,110,22,30);
+        add(BSIGUIENTE);
+        
+        BNUEVO = new JButton("Nuevo Mensaje");
+        BNUEVO.setFont(f);
+        BNUEVO.setBounds(45,250,200,20);
+        add(BNUEVO);
+        
+        BELIMINAR = new JButton("Eliminar Mensaje");
+        BELIMINAR.setFont(f);
+        BELIMINAR.setBounds(45,300,200,20);
+        add(BELIMINAR);
+         
         try {
             ino.arduinoRXTX("/dev/ttyUSB0", ABORT, new HandlerListenerPort());
         } catch (ArduinoException ex) {
