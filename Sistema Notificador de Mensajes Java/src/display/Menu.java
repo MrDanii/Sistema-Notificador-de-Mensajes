@@ -2,7 +2,11 @@ package display;
 
 import com.panamahitek.ArduinoException;
 import com.panamahitek.PanamaHitek_Arduino;
+import com.panamahitek.PanamaHitek_MultiMessage;
+import datos.Mensaje;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -14,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
 
 public class Menu extends JFrame{
     
@@ -25,6 +30,7 @@ public class Menu extends JFrame{
     
     
     private PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
+    private PanamaHitek_MultiMessage multiMessage = new PanamaHitek_MultiMessage(3, ino);
     /*
     private SerialPortEventListener listener = new SerialPortEventListener() {
         @Override
@@ -116,6 +122,7 @@ public class Menu extends JFrame{
        bNuevo = new JButton("Nuevo Mensaje");
        bNuevo.setFont(f);
        bNuevo.setBounds(40,230,180,20);
+       bNuevo.addActionListener(new HandlerBotonAgregar());
        add(bNuevo);
        
        bEliminar = new JButton("Eliminar Mensaje");
@@ -123,6 +130,43 @@ public class Menu extends JFrame{
        bEliminar.setBounds(260,230,180,20);
        add(bEliminar);
     }
+    
+    private class HandlerBotonAgregar implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String luminosidad, humedad, temperatura;
+            
+            
+            try {                
+                while(multiMessage.dataReceptionCompleted() != false){                    
+                    luminosidad = multiMessage.getMessage(0);
+                    humedad = multiMessage.getMessage(1);
+                    temperatura = multiMessage.getMessage(2);
+                    Mensaje mensaje = new Mensaje(luminosidad, humedad, temperatura);
+                    System.out.println(">>>\nluminosidad: "+mensaje.getLuminosidad()+
+                            "\nHumedad: "+humedad+
+                            "\nTemperatura: "+temperatura); 
+                }
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }        
+    }
+    
+    private class HandlerBotonELiminar implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    }
+    
     
     /**
      * Método que muestra la ventana menú
