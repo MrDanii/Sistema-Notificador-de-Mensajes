@@ -1,8 +1,10 @@
 22:56:30, 19/10/2018
 luminosidad: 60%
-Hum/Temp: 60%, 50°C
+Humedad: 60%
+Temperatura: 50°C
 Mensaje: We fight for those who cannot :v
 12:05:50, 20/11/2018
 luminosidad: 50%
-Hum/Temp: 30%, 20°C
+Humedad: 30%
+Temperatura: 20°C
 Mensaje: Fear is the first of many foes

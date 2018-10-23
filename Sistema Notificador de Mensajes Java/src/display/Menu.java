@@ -4,33 +4,46 @@ import com.panamahitek.ArduinoException;
 import com.panamahitek.PanamaHitek_Arduino;
 import com.panamahitek.PanamaHitek_MultiMessage;
 import datos.Mensaje;
+import escritores.Escritor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import lectores.Lector;
 
 public class Menu extends JFrame{
+    private Lector lector;              //objeto con el que leeremos los mensajes iniciales (solo se ejecuta al inicio del programa)
+    private Escritor escritor;          //objeto con el que escribiremos en nuestro archivo .txt cada vez que se añada o elimine un mensaje
+    
+    //objetos con la información de los mensajes guardados
+    private Mensaje mensajeActual;      
+    private ArrayList<Mensaje> mensajes;
+    private int indiceMensaje;
     
     //Componentes de la interfaz gráfica
-    JLabel lTitulo, lFecha, lLuminosidad, lTemperatura, lHumedad, lMensaje;
-    JButton bAnterior, bSiguiente, bNuevo, bEliminar, bAgregar, bCancelar;
-    JTextArea tMensaje;
-    JScrollPane sMensaje;
+    private JLabel lTitulo, lFecha, lLuminosidad, lTemperatura, lHumedad, lMensaje;
+    private JButton bAnterior, bSiguiente, bNuevo, bEliminar, bAgregar, bCancelar;
+    private JTextArea tMensaje;
+    private JScrollPane sMensaje;
     
-    
+    //declaramos objetos para comenzar la comunicación serial entre arduino y java
     private PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     private PanamaHitek_MultiMessage multiMessage = new PanamaHitek_MultiMessage(3, ino);
+    
     /*
     private SerialPortEventListener listener = new SerialPortEventListener() {
         @Override
@@ -40,19 +53,21 @@ public class Menu extends JFrame{
         }
     };
     */       
-    public Menu(){
-        
+    public Menu(){        
        super("Mensajes");
-       setLayout(null);
-       
-       //Llamamos al método que inicializa los compontentes
-       inicializarComponentes(); 
-      
+       setLayout(null);    
+       //inicializamos el objeto con el puerto correspondiente, en este caso "/dev/ttyUSB0"
         try {
             ino.arduinoRXTX("/dev/ttyUSB0", ABORT, new HandlerListenerPort());
         } catch (ArduinoException ex) {
             Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+       //Llamamos al método que inicializa los compontentes
+       inicializarComponentes();    
+       inicializarMensajes();
+       
+       
     }
     
     private class HandlerListenerPort implements SerialPortEventListener{
@@ -74,22 +89,22 @@ public class Menu extends JFrame{
        lTitulo.setBounds(180,20,100,20);
        add(lTitulo);
        
-       lFecha = new JLabel("Fecha: 22/10/18");
+       lFecha = new JLabel("Fecha: ");
        lFecha.setFont(f);
        lFecha.setBounds(40,60,200,20);
        add(lFecha);
        
-       lLuminosidad = new JLabel("Luminosidad: 85%");
+       lLuminosidad = new JLabel("Luminosidad: ");
        lLuminosidad.setFont(f);
        lLuminosidad.setBounds(250,60,200,20);
        add(lLuminosidad);
        
-       lTemperatura = new JLabel("Temperatura: 25°C");
+       lTemperatura = new JLabel("Temperatura: ");
        lTemperatura.setFont(f);
        lTemperatura.setBounds(40,90,200,20);
        add(lTemperatura);
        
-       lHumedad = new JLabel("Humedad: 45%");
+       lHumedad = new JLabel("Humedad: ");
        lHumedad.setFont(f);
        lHumedad.setBounds(250,90,200,20);
        add(lHumedad);
@@ -110,12 +125,12 @@ public class Menu extends JFrame{
        add(sMensaje);
        
        bAnterior = new JButton();
-       bAnterior.setIcon(new ImageIcon("src/display/izq.png"));
+       bAnterior.setIcon(new ImageIcon("src/imagenes/izq.png"));
        bAnterior.setBounds(10,110,22,30);
        add(bAnterior);
        
        bSiguiente = new JButton("Siguiente");
-       bSiguiente.setIcon(new ImageIcon("src/display/der.png"));
+       bSiguiente.setIcon(new ImageIcon("src/imagenes/der.png"));
        bSiguiente.setBounds(440,110,22,30);
        add(bSiguiente);
        
@@ -131,30 +146,79 @@ public class Menu extends JFrame{
        add(bEliminar);
     }
     
+    private void inicializarMensajes(){
+        try {
+            lector = new Lector();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        mensajes = lector.getMensajes();      //obtenemos los mensajes guardados en el txt
+        
+                //Si existen mensajes
+        if(!mensajes.isEmpty()){
+            //Por defecto pondremos el primer mensaje almacenado
+            mostrarMensaje(mensajes.get(0));
+        }else{  //Si no existen mensajes
+            tMensaje.setText("\tNo hay mensajes");
+        }        
+    }
+    
+    /**
+     * Método que se encarga de poner el mensaje en cada componente de la interfaz
+     * y en la pantalla lcd conectada a nuestro arduino
+     * @param mensaje el mensaje que queramos mostrar en la interfaz gráfica y en la lcd
+     */
+    private void mostrarMensaje(Mensaje mensaje){
+        //mostrar vista en la interfaz gráfica
+        lFecha.setText(mensaje.getFecha());
+        lHumedad.setText(mensaje.getHumedad());
+        lTemperatura.setText(mensaje.getTemperatura());
+        lLuminosidad.setText(mensaje.getLuminosidad());
+        tMensaje.setText(mensaje.getMensajeUsuario());
+        //enviamos los datos al arduino, para mostrar la vista en la pantalla lcd
+        String mensajeDatos = "Fecha: "+mensaje.getFecha()+
+                "; Humedad: "+ mensaje.getHumedad()+
+                "; Temperatura: "+ mensaje.getTemperatura()+
+                "; Luminosidad: "+ mensaje.getLuminosidad();
+        
+        try {
+            ino.sendData(mensajeDatos+"!");            
+            ino.sendData(mensaje.getMensajeUsuario()+"!");
+            System.out.println("Se enviaron los datos: \nmensajeDatos: "+mensajeDatos+
+                    "\nmensajeUsuario: "+mensaje.getMensajeUsuario());
+        } catch (ArduinoException ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);            
+        } catch (SerialPortException ex) {
+            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+        }            
+    }
+    
     private class HandlerBotonAgregar implements ActionListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String luminosidad, humedad, temperatura;
+            String luminosidad, humedad, temperatura, mensajeUsuario;
+            mensajeUsuario = tMensaje.getText().replace('\n', ' '); //reemplaza los saltos de línea por espacion en blando
             
-            
-            try {                
-                while(multiMessage.dataReceptionCompleted() != false){                    
-                    luminosidad = multiMessage.getMessage(0);
-                    humedad = multiMessage.getMessage(1);
-                    temperatura = multiMessage.getMessage(2);
-                    Mensaje mensaje = new Mensaje(luminosidad, humedad, temperatura);
-                    System.out.println(">>>\nluminosidad: "+mensaje.getLuminosidad()+
-                            "\nHumedad: "+humedad+
-                            "\nTemperatura: "+temperatura); 
+            //verificamos que el mensaje sea menor a 140 caracteres
+            if(mensajeUsuario.length() > 140){
+                JOptionPane.showMessageDialog(null, "El número de Caracteres es mayor a 140 caracteres");
+            }else{
+                try {            
+                    while(multiMessage.dataReceptionCompleted() != false){    
+
+                        luminosidad = multiMessage.getMessage(0);
+                        humedad = multiMessage.getMessage(1);
+                        temperatura = multiMessage.getMessage(2);                                            
+                        Mensaje mensaje = new Mensaje(luminosidad, humedad, temperatura, mensajeUsuario);
+                        mensajes.add(mensaje);
+                    }
+                } catch (ArduinoException ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SerialPortException ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (ArduinoException ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SerialPortException ex) {
-                Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            
         }        
     }
     

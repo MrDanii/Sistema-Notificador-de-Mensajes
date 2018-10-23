@@ -6,28 +6,32 @@ import java.util.Date;
 public class Mensaje {
     private String fecha;
     private String luminosidad;
-    private String humTemp;
+    private String humedad;
+    private String temperatura;
     private String mensajeUsuario;
 
     // Contructores
-    public Mensaje(String fecha, String luminosidad, String humTemp, String mensajeUsuario) {
+    public Mensaje(String fecha, String luminosidad, String humedad, String temperatura, String mensajeUsuario) {
         this.fecha= fecha;
         this.luminosidad = luminosidad;
-        this.humTemp = humTemp;
+        this.humedad = humedad;
+        this.temperatura = temperatura;
         this.mensajeUsuario = mensajeUsuario;
     }
     
-    public Mensaje(String luminosidad, String humTemp, String mensajeUsuario) {
+    public Mensaje(String luminosidad, String humedad, String temperatura, String mensajeUsuario) {
         establecerFecha();
         this.luminosidad = luminosidad;
-        this.humTemp = humTemp;
+        this.humedad = humedad;
+        this.temperatura = temperatura;
         this.mensajeUsuario = mensajeUsuario;
     }
     
     public Mensaje(int luminosidad, int humedad, int temperatura, String mensajeUsuario){
         establecerFecha();
         this.luminosidad = "luminosidad: "+ String.valueOf(luminosidad) +"%";
-        this.humTemp = "Hum/Temp: "+ String.valueOf(humedad) +"%, "+ String.valueOf(temperatura) + "°C";
+        this.humedad = "Humedad: "+ String.valueOf(humedad) +"%";        
+        this.temperatura = "Temperatura: "+ String.valueOf(temperatura) +"°C";        
         this.mensajeUsuario = mensajeUsuario;        
     }
     
@@ -59,8 +63,12 @@ public class Mensaje {
         this.luminosidad = luminosidad;
     }
 
-    public void setHumTemp(String humTemp) {
-        this.humTemp = humTemp;
+    public void setHumedad(String humedad) {
+        this.humedad = humedad;
+    }
+    
+    public void setTemperatura(String temperatura) {
+        this.temperatura = temperatura;
     }
 
     public void setMensajeUsuario(String mensajeUsuario) {
@@ -75,8 +83,12 @@ public class Mensaje {
         return luminosidad;
     }
 
-    public String getHumTemp() {
-        return humTemp;
+    public String getHumedad() {
+        return humedad;
+    }
+
+    public String getTemperatura() {
+        return temperatura;
     }
 
     public String getMensajeUsuario(){
@@ -90,7 +102,7 @@ public class Mensaje {
 class TestMensaje{
     
     public static void main (String [] args){
-        Mensaje mensaje= new Mensaje("60", "30°C, Hum:50%", "Lalalalalalallala");
+        Mensaje mensaje= new Mensaje("60", "30°C, Hum:50%", "Temp: 30°C","Lalalalalalallala");
         
     }
 }
