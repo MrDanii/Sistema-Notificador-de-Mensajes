@@ -51,7 +51,7 @@ El proyecto incluye además una interfaz de software que nos permite generar nue
  ## Procedimiento
  
  **1. Armar el prototipo siguiendo el siguiente diagrama**
- ![](Diagrama.jpg)
+ ![](Diagrama.png)
 
  Resultados
 
