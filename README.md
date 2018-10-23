@@ -51,12 +51,12 @@ El proyecto incluye además una interfaz de software que nos permite generar nue
  ## Procedimiento
  
  **1. Armar el prototipo siguiendo el siguiente diagrama**
- ![](Diagrama.png)
+ ![](/Imagenes/Diagrama.png)
 
  Resultados
 
- ![](Prototipo1.jpg)
- ![](Prototipo2.jpg)
+ ![](/Imagenes/Prototipo1.jpg)
+ ![](/Imagenes/Prototipo2.jpg)
  
  **2. Importar las librerias en los IDE correspondientes**
  

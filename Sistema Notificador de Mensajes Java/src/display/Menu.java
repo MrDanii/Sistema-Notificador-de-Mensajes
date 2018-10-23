@@ -35,8 +35,8 @@ public class Menu extends JFrame{
     private int indiceMensaje;
     
     //Componentes de la interfaz gráfica
-    private JLabel lTitulo, lFecha, lLuminosidad, lTemperatura, lHumedad, lMensaje;
-    private JButton bAnterior, bSiguiente, bNuevo, bEliminar, bAgregar, bCancelar;
+    private JLabel lTitulo, lFecha, lMensaje;
+    private JButton bAnterior, bSiguiente, bNuevo, bEliminar;
     private JTextArea tMensaje;
     private JScrollPane sMensaje;
     
@@ -55,7 +55,8 @@ public class Menu extends JFrame{
     */       
     public Menu(){        
        super("Mensajes");
-       setLayout(null);    
+       setLayout(null);   
+       escritor = new Escritor();
        //inicializamos el objeto con el puerto correspondiente, en este caso "/dev/ttyUSB0"
         try {
             ino.arduinoRXTX("/dev/ttyUSB0", ABORT, new HandlerListenerPort());
@@ -94,24 +95,9 @@ public class Menu extends JFrame{
        lFecha.setBounds(40,60,200,20);
        add(lFecha);
        
-       lLuminosidad = new JLabel("Luminosidad: ");
-       lLuminosidad.setFont(f);
-       lLuminosidad.setBounds(250,60,200,20);
-       add(lLuminosidad);
-       
-       lTemperatura = new JLabel("Temperatura: ");
-       lTemperatura.setFont(f);
-       lTemperatura.setBounds(40,90,200,20);
-       add(lTemperatura);
-       
-       lHumedad = new JLabel("Humedad: ");
-       lHumedad.setFont(f);
-       lHumedad.setBounds(250,90,200,20);
-       add(lHumedad);
-       
        lMensaje = new JLabel("Mensaje:");
        lMensaje.setFont(f);
-       lMensaje.setBounds(40,120,100,20);
+       lMensaje.setBounds(40,90,100,20);
        add(lMensaje);
        
        tMensaje = new JTextArea();
@@ -119,7 +105,7 @@ public class Menu extends JFrame{
        tMensaje.setToolTipText("Ingrese un mensaje de máximo 140 caracteres");
        
        sMensaje = new JScrollPane(tMensaje);
-       sMensaje.setBounds(40,150,400,50);
+       sMensaje.setBounds(40,120,400,100);
        sMensaje.setHorizontalScrollBarPolicy(
                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
        add(sMensaje);
@@ -171,9 +157,6 @@ public class Menu extends JFrame{
     private void mostrarMensaje(Mensaje mensaje){
         //mostrar vista en la interfaz gráfica
         lFecha.setText(mensaje.getFecha());
-        lHumedad.setText(mensaje.getHumedad());
-        lTemperatura.setText(mensaje.getTemperatura());
-        lLuminosidad.setText(mensaje.getLuminosidad());
         tMensaje.setText(mensaje.getMensajeUsuario());
         //enviamos los datos al arduino, para mostrar la vista en la pantalla lcd
         String mensajeDatos = "Fecha: "+mensaje.getFecha()+
@@ -183,7 +166,7 @@ public class Menu extends JFrame{
         
         try {
             ino.sendData(mensajeDatos+"!");            
-            ino.sendData(mensaje.getMensajeUsuario()+"!");
+            //ino.sendData(mensaje.getMensajeUsuario()+"!");
             System.out.println("Se enviaron los datos: \nmensajeDatos: "+mensajeDatos+
                     "\nmensajeUsuario: "+mensaje.getMensajeUsuario());
         } catch (ArduinoException ex) {
@@ -197,28 +180,42 @@ public class Menu extends JFrame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String luminosidad, humedad, temperatura, mensajeUsuario;
-            mensajeUsuario = tMensaje.getText().replace('\n', ' '); //reemplaza los saltos de línea por espacion en blando
+            new Window().setVisible(true);
             
-            //verificamos que el mensaje sea menor a 140 caracteres
-            if(mensajeUsuario.length() > 140){
-                JOptionPane.showMessageDialog(null, "El número de Caracteres es mayor a 140 caracteres");
-            }else{
-                try {            
-                    while(multiMessage.dataReceptionCompleted() != false){    
-
-                        luminosidad = multiMessage.getMessage(0);
-                        humedad = multiMessage.getMessage(1);
-                        temperatura = multiMessage.getMessage(2);                                            
-                        Mensaje mensaje = new Mensaje(luminosidad, humedad, temperatura, mensajeUsuario);
-                        mensajes.add(mensaje);
-                    }
-                } catch (ArduinoException ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (SerialPortException ex) {
-                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+//            String luminosidad, humedad, temperatura, mensajeUsuario;
+//            mensajeUsuario = tMensaje.getText().replace('\n', ' '); //reemplaza los saltos de línea por espacion en blando
+//            
+//            //verificamos que el mensaje sea menor a 140 caracteres
+//            if(mensajeUsuario.length() > 140){
+//                JOptionPane.showMessageDialog(null, "El número de Caracteres es mayor a 140 caracteres");
+//            }else{
+//                try {    
+//                    Mensaje mensaje;
+//                    while(multiMessage.dataReceptionCompleted() != false){    
+//
+//                        luminosidad = multiMessage.getMessage(0);
+//                        humedad = multiMessage.getMessage(1);
+//                        temperatura = multiMessage.getMessage(2);                                            
+//                        mensaje = new Mensaje(luminosidad, humedad, temperatura, mensajeUsuario);
+//                        //mensajes.add(mensaje);
+//                        System.out.println("Lum: "+luminosidad+ "\nhumedad: " +humedad+
+//                                "\nTemepratura: "+ temperatura+ "\nmensajeUsuario: "+ mensajeUsuario+
+//                                "\nFecha: "+ mensaje.getFecha());
+//                        System.out.println(">>>>>>>>>> Numero mensajes: "+ mensajes.size());
+//                        multiMessage.flushBuffer();                        
+//                        mostrarMensaje(mensaje);
+//                        mensajes.add(mensaje);
+//                        escritor.definirDatos(mensajes);
+//                        escritor.escribir("src/archivos/Mensajes_2.txt");
+//                    }
+//                    //aqui
+//                    
+//                } catch (ArduinoException ex) {
+//                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+//                } catch (SerialPortException ex) {
+//                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
         }        
     }
     
@@ -230,6 +227,8 @@ public class Menu extends JFrame{
         }
         
     }
+    
+    
     
     
     /**
