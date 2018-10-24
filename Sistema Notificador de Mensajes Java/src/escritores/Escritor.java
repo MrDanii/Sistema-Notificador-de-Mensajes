@@ -32,9 +32,6 @@ public class Escritor {
         if(mensajes != null){            
             for(Mensaje mensaje : mensajes){
                 this.datos += mensaje.getFecha()+"\n";
-                this.datos += mensaje.getLuminosidad()+"\n";
-                this.datos += mensaje.getHumedad() +"\n";
-                this.datos += mensaje.getTemperatura() +"\n";
                 this.datos += mensaje.getMensajeUsuario()+"\n";
             }
         }
@@ -49,13 +46,10 @@ class testEscritor{
         Escritor escritor=  new Escritor();
         ArrayList<Mensaje> mensajes = new ArrayList<>();
         mensajes.add(new Mensaje("22:56:30, 19/10/2018",
-                "luminosidad: 60%", "Humedad: 60%", "Temperatura: 50°C",
                 "Mensaje: We figWht for those who cannot :v"));
         mensajes.add(new Mensaje("12:05:50, 20/11/2018",
-                "luminosidad: 50%", "Humedad: 30%", "Temperatura: 20°C",
                 "Mensaje: Fear is the first of many foes"));
          mensajes.add(new Mensaje("22:56:30, 19/10/2018",
-                "luminosidad: 60%", "Humedad: 60%", "Temperatura: 50°C",
                 "Mensaje: Luchamos por aquellos que no pueden :v"));        
         
         escritor.definirDatos(mensajes);

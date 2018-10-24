@@ -1,38 +1,20 @@
 package datos;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class Mensaje {
     private String fecha;
-    private String luminosidad;
-    private String humedad;
-    private String temperatura;
     private String mensajeUsuario;
 
     // Contructores
-    public Mensaje(String fecha, String luminosidad, String humedad, String temperatura, String mensajeUsuario) {
+    public Mensaje(String fecha, String mensajeUsuario) {
         this.fecha= fecha;
-        this.luminosidad = luminosidad;
-        this.humedad = humedad;
-        this.temperatura = temperatura;
         this.mensajeUsuario = mensajeUsuario;
     }
     
-    public Mensaje(String luminosidad, String humedad, String temperatura, String mensajeUsuario) {
+    public Mensaje(String mensajeUsuario) {
         establecerFecha();
-        this.luminosidad = luminosidad;
-        this.humedad = humedad;
-        this.temperatura = temperatura;
         this.mensajeUsuario = mensajeUsuario;
-    }
-    
-    public Mensaje(int luminosidad, int humedad, int temperatura, String mensajeUsuario){
-        establecerFecha();
-        this.luminosidad = "luminosidad: "+ String.valueOf(luminosidad) +"%";
-        this.humedad = "Humedad: "+ String.valueOf(humedad) +"%";        
-        this.temperatura = "Temperatura: "+ String.valueOf(temperatura) +"°C";        
-        this.mensajeUsuario = mensajeUsuario;        
     }
     
     /**
@@ -59,36 +41,12 @@ public class Mensaje {
                 anio;        
     }
 
-    public void setLuminosidad(String luminosidad) {
-        this.luminosidad = luminosidad;
-    }
-
-    public void setHumedad(String humedad) {
-        this.humedad = humedad;
-    }
-    
-    public void setTemperatura(String temperatura) {
-        this.temperatura = temperatura;
-    }
-
     public void setMensajeUsuario(String mensajeUsuario) {
         this.mensajeUsuario = mensajeUsuario;
     }
 
     public String getFecha() {
         return fecha;
-    }
-
-    public String getLuminosidad() {
-        return luminosidad;
-    }
-
-    public String getHumedad() {
-        return humedad;
-    }
-
-    public String getTemperatura() {
-        return temperatura;
     }
 
     public String getMensajeUsuario(){

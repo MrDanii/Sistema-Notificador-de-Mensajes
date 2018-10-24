@@ -5,11 +5,16 @@ import com.panamahitek.PanamaHitek_Arduino;
 import com.panamahitek.PanamaHitek_MultiMessage;
 import datos.Mensaje;
 import escritores.Escritor;
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import static java.awt.image.ImageObserver.ERROR;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -31,7 +36,7 @@ public class Menu extends JFrame{
     
     //objetos con la información de los mensajes guardados
     private Mensaje mensajeActual;      
-    private ArrayList<Mensaje> mensajes;
+    public static ArrayList<Mensaje> mensajes;
     private int indiceMensaje;
     
     //Componentes de la interfaz gráfica
@@ -43,6 +48,13 @@ public class Menu extends JFrame{
     //declaramos objetos para comenzar la comunicación serial entre arduino y java
     private PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     private PanamaHitek_MultiMessage multiMessage = new PanamaHitek_MultiMessage(3, ino);
+    
+    
+    static SerialPort serialPort;
+    private final String PORT_NAME = "/dev/ttyS0";
+    private static final int TIME_OUT = 2000;
+    private static final int DATA_RATE = 9600;
+    static OutputStream Output = null;
     
     /*
     private SerialPortEventListener listener = new SerialPortEventListener() {
@@ -58,16 +70,16 @@ public class Menu extends JFrame{
        setLayout(null);   
        escritor = new Escritor();
        //inicializamos el objeto con el puerto correspondiente, en este caso "/dev/ttyUSB0"
-        try {
-            ino.arduinoRXTX("/dev/ttyUSB0", ABORT, new HandlerListenerPort());
-        } catch (ArduinoException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            ino.arduinoRXTX("/dev/ttyS0", ABORT, new HandlerListenerPort());
+//        } catch (ArduinoException ex) {
+//            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         
        //Llamamos al método que inicializa los compontentes
        inicializarComponentes();    
        inicializarMensajes();
-       
+       ArduinoConnection();
        
     }
     
@@ -102,6 +114,7 @@ public class Menu extends JFrame{
        
        tMensaje = new JTextArea();
        tMensaje.setFont(f);
+       tMensaje.setEditable(false);
        tMensaje.setToolTipText("Ingrese un mensaje de máximo 140 caracteres");
        
        sMensaje = new JScrollPane(tMensaje);
@@ -132,6 +145,41 @@ public class Menu extends JFrame{
        add(bEliminar);
     }
     
+    public void ArduinoConnection() {
+        CommPortIdentifier portId = null;
+        Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
+
+        while (portEnum.hasMoreElements()) {
+            CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
+            
+            if (PORT_NAME.equals(currPortId.getName())) {
+                portId = currPortId;
+                break;
+            }
+        }
+
+        if (portId == null) {
+            System.out.println("No se encuentra el puerto");
+            System.exit(ERROR);
+            return;
+        }
+
+        try {
+            serialPort = (SerialPort) portId.open(this.getClass().getName(), TIME_OUT);
+
+            serialPort.setSerialPortParams(DATA_RATE,
+                    SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+
+            Output = serialPort.getOutputStream();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.exit(ERROR);
+        }
+    }
+    
     private void inicializarMensajes(){
         try {
             lector = new Lector();
@@ -160,9 +208,7 @@ public class Menu extends JFrame{
         tMensaje.setText(mensaje.getMensajeUsuario());
         //enviamos los datos al arduino, para mostrar la vista en la pantalla lcd
         String mensajeDatos = "Fecha: "+mensaje.getFecha()+
-                "; Humedad: "+ mensaje.getHumedad()+
-                "; Temperatura: "+ mensaje.getTemperatura()+
-                "; Luminosidad: "+ mensaje.getLuminosidad();
+                "; Mensaje: "+ mensaje.getMensajeUsuario();
         
         try {
             ino.sendData(mensajeDatos+"!");            
@@ -180,7 +226,9 @@ public class Menu extends JFrame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            new Window().setVisible(true);
+           
+            new Window(serialPort, Output).setVisible(true);
+           
             
 //            String luminosidad, humedad, temperatura, mensajeUsuario;
 //            mensajeUsuario = tMensaje.getText().replace('\n', ' '); //reemplaza los saltos de línea por espacion en blando

@@ -1,5 +1,7 @@
 package display;
 
+import datos.Mensaje;
+import escritores.Escritor;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import java.io.IOException;
@@ -10,48 +12,10 @@ import javax.swing.JOptionPane;
 
 public class Window extends javax.swing.JFrame {
     int caracteres = 140;
-    private OutputStream Output = null;
+    private Escritor escritor;
+
     SerialPort serialPort;
-    private final String PORT_NAME = "/dev/ttyS0";
-    private static final int TIME_OUT = 2000;
-    private static final int DATA_RATE = 9600;
-    
-    Calendar calendar = Calendar.getInstance();
-
-    public void ArduinoConnection() {
-        CommPortIdentifier portId = null;
-        Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
-
-        while (portEnum.hasMoreElements()) {
-            CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
-            
-            if (PORT_NAME.equals(currPortId.getName())) {
-                portId = currPortId;
-                break;
-            }
-        }
-
-        if (portId == null) {
-            showError("No se encuentra el puerto");
-            System.exit(ERROR);
-            return;
-        }
-
-        try {
-            serialPort = (SerialPort) portId.open(this.getClass().getName(), TIME_OUT);
-
-            serialPort.setSerialPortParams(DATA_RATE,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-
-            Output = serialPort.getOutputStream();
-
-        } catch (Exception e) {
-            showError(e.getMessage());
-            System.exit(ERROR);
-        }
-    }
+    private OutputStream Output = null;
 
     private void EnviarDatos(String data) {
         try {
@@ -63,10 +27,13 @@ public class Window extends javax.swing.JFrame {
         }
     }
 
-    public Window() {
+    public Window(SerialPort serialPort, OutputStream output) {
+        escritor = new Escritor();
         initComponents();
         letras();
-        ArduinoConnection();
+        this.Output = output;
+        
+        //ArduinoConnection();
     }
 
     public void letras() {
@@ -109,7 +76,7 @@ public class Window extends javax.swing.JFrame {
         jButtonEnviar = new javax.swing.JButton();
         jButtonLimpiar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jTextFieldMensaje.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
         jTextFieldMensaje.addActionListener(new java.awt.event.ActionListener() {
@@ -182,11 +149,14 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldMensajeKeyReleased
 
     private void jButtonEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEnviarActionPerformed
-        String year;
-        year = String.valueOf(calendar.get(Calendar.YEAR));
-        //System.out.println("" + calendar.get(Calendar.YEAR));
-        EnviarDatos(year + jTextFieldMensaje.getText());
+         Mensaje mensajeActual = new Mensaje(jTextFieldMensaje.getText());
+        String fecha = mensajeActual.getFecha();
+        System.out.println(fecha);
+        EnviarDatos(fecha + jTextFieldMensaje.getText());
         jTextFieldMensaje.setText("");
+        Menu.mensajes.add(mensajeActual);
+        escritor.definirDatos(Menu.mensajes);
+        escritor.escribir("src/archivos/Mensajes.txt");
         letras();
     }//GEN-LAST:event_jButtonEnviarActionPerformed
 
@@ -231,7 +201,7 @@ public class Window extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Window().setVisible(true);
+                new Window(Menu.serialPort, Menu.Output).setVisible(true);
             }
         });
     }

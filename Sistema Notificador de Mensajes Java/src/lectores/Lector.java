@@ -65,7 +65,7 @@ public class Lector {
                     cadenaMensajes += linea+ "\n";
                     nMensajes ++;                    
                 }
-                nMensajes/= 5;
+                nMensajes/= 2;
                 System.out.println("Mensajes existentes: " + nMensajes + "\n\n"+cadenaMensajes);
                 br.close();
             } catch (IOException ex) {
@@ -84,8 +84,7 @@ public class Lector {
         StringTokenizer tokens = new StringTokenizer(cadenaMensajes, "\n", false);
         Mensaje mensajeActual;
         for(int i=0; i < nMensajes; i++){
-            mensajeActual = new Mensaje(tokens.nextToken(), tokens.nextToken(),
-                    tokens.nextToken(), tokens.nextToken(), tokens.nextToken());
+            mensajeActual = new Mensaje(tokens.nextToken(), tokens.nextToken());
             mensajes.add(mensajeActual);  //y aniadimos ese mensaje, a nuestro arreglo de mensajes
         }                
         return mensajes;
@@ -114,9 +113,7 @@ class TestLector{
             lector.getMensajes();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TestLector.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(TestLector.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }       
     }
 }
 */
