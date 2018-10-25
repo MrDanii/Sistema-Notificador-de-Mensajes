@@ -7,32 +7,33 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Escritor {
+
     private FileWriter libreta;
     private BufferedWriter hoja;
     private PrintWriter pluma;
-    private String datos;   
-    
-    public void escribir(String direccion){
-        try{
+    private String datos;
+
+    public void escribir(String direccion) {
+        try {
             libreta = new FileWriter(direccion);
             hoja = new BufferedWriter(libreta);
             pluma = new PrintWriter(hoja);
-            
+
             pluma.print(datos);
             hoja.close();
             libreta.close();
 
-        }catch(Exception ex){
-            System.out.println("El error es: "+ex);            
+        } catch (Exception ex) {
+            System.out.println("El error es: " + ex);
         }
     }
-    
-    public void definirDatos(ArrayList<Mensaje> mensajes){        
+
+    public void definirDatos(ArrayList<Mensaje> mensajes) {
         this.datos = "";
-        if(mensajes != null){            
-            for(Mensaje mensaje : mensajes){
-                this.datos += mensaje.getFecha()+"\n";
-                this.datos += mensaje.getMensajeUsuario()+"\n";
+        if (mensajes != null) {
+            for (Mensaje mensaje : mensajes) {
+                this.datos += mensaje.getFecha() + "\n";
+                this.datos += mensaje.getMensajeUsuario() + "\n";
             }
         }
         System.out.println(this.datos);

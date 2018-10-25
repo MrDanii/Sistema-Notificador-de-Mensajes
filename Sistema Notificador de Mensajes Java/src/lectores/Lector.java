@@ -11,95 +11,102 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Lector {           
+public class Lector {
+
     private final FileReader fr;
-    private final BufferedReader br;    
+    private final BufferedReader br;
     private int nMensajes;
     private String cadenaMensajes;
-    private ArrayList<Mensaje> mensajes;    
-    
+    private ArrayList<Mensaje> mensajes;
+
     /**
-     * inicializa nuestro archivo de lectura (FileReader) con la dirección por defecto del proyecto
-     * @throws FileNotFoundException 
+     * inicializa nuestro archivo de lectura (FileReader) con la dirección por
+     * defecto del proyecto
+     *
+     * @throws FileNotFoundException
      */
-    public Lector() throws FileNotFoundException{
-        fr= new FileReader("src/archivos/Mensajes.txt");        
-        br= new BufferedReader(fr); 
+    public Lector() throws FileNotFoundException {
+        fr = new FileReader("src/archivos/Mensajes.txt");
+        br = new BufferedReader(fr);
         inicializarMensajes();
     }
-    
+
     /**
-     * inicializa nuestro archivo de lectura (FileReader) por medio de una dirección
+     * inicializa nuestro archivo de lectura (FileReader) por medio de una
+     * dirección
+     *
      * @param ubicacion dirección de nuestro archivo
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
-    public Lector(String ubicacion) throws FileNotFoundException{
-        fr= new FileReader(ubicacion);
-        br= new BufferedReader(fr);        
+    public Lector(String ubicacion) throws FileNotFoundException {
+        fr = new FileReader(ubicacion);
+        br = new BufferedReader(fr);
         inicializarMensajes();
     }
-    
+
     /**
-     * inicializa nuestro archivo de lectura (FileReader) por medio de un objeto File
+     * inicializa nuestro archivo de lectura (FileReader) por medio de un objeto
+     * File
+     *
      * @param archivo objeto File
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
-    public Lector(File archivo) throws FileNotFoundException{
-        fr= new FileReader(archivo);
-        br= new BufferedReader(fr);
+    public Lector(File archivo) throws FileNotFoundException {
+        fr = new FileReader(archivo);
+        br = new BufferedReader(fr);
         inicializarMensajes();
     }
-    
+
     /**
-     * 
+     *
      */
-    private void inicializarMensajes(){
+    private void inicializarMensajes() {
         this.nMensajes = 0;
         this.mensajes = new ArrayList<>();
-        
-        if(br != null){
-            try {     
+
+        if (br != null) {
+            try {
                 String linea;
                 cadenaMensajes = "";
-                while((linea = br.readLine()) != null){
-                    cadenaMensajes += linea+ "\n";
-                    nMensajes ++;                    
+                while ((linea = br.readLine()) != null) {
+                    cadenaMensajes += linea + "\n";
+                    nMensajes++;
                 }
-                nMensajes/= 2;
-                System.out.println("Mensajes existentes: " + nMensajes + "\n\n"+cadenaMensajes);
+                nMensajes /= 2;
+                System.out.println("Mensajes existentes: " + nMensajes + "\n\n" + cadenaMensajes);
                 br.close();
             } catch (IOException ex) {
                 Logger.getLogger(Lector.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
+        } else {
             System.out.println("El archivo no existe o no se abrió correctamente");
         }
         //Una vez que tenemos la cadena con los mensajes, los encapsulamos en un arraylist de tipo Mensaje.java
-        for(int i=0; i< nMensajes; i++){
-            
+        for (int i = 0; i < nMensajes; i++) {
+
         }
     }
-    
-    public ArrayList<Mensaje> getMensajes(){
+
+    public ArrayList<Mensaje> getMensajes() {
         StringTokenizer tokens = new StringTokenizer(cadenaMensajes, "\n", false);
         Mensaje mensajeActual;
-        for(int i=0; i < nMensajes; i++){
+        for (int i = 0; i < nMensajes; i++) {
             mensajeActual = new Mensaje(tokens.nextToken(), tokens.nextToken());
             mensajes.add(mensajeActual);  //y aniadimos ese mensaje, a nuestro arreglo de mensajes
-        }                
+        }
         return mensajes;
     }
-    
-    public boolean hayMensajes(){
-        System.out.println("nMensajes: "+ this.nMensajes);
+
+    public boolean hayMensajes() {
+        System.out.println("nMensajes: " + this.nMensajes);
         return nMensajes > 0;
     }
-    
-    public FileReader getFileReader(){
+
+    public FileReader getFileReader() {
         return fr;
     }
-    
-    public BufferedReader getBufferedReader(){
+
+    public BufferedReader getBufferedReader() {
         return br;
     }
 }
